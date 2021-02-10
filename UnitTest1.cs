@@ -188,5 +188,17 @@ namespace Shopping_TDD
             var price = Shop.GetPrice("ABCAAAA"); // (30 + 40)
             Assert.Equal(70, price);
         }
+
+        [Fact]
+        public void Partner_Discount()
+        {
+            /* create shoppingcart */
+            ShoppingCart Shop = new ShoppingCart();
+            Shop.RegisterProduct('A', 10);
+            Shop.RegisterProduct('B', 20);
+            Shop.RegisterProduct('C', 30);
+            var price = Shop.GetPrice("At"); //9
+            Assert.Equal(9, price);
+        }
     }
 }
