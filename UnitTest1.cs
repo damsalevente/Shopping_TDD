@@ -1,8 +1,32 @@
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Shopping_TDD
 {
+    public class ShoppingCart
+    {
+     
+        private Dictionary<char, double> products = new Dictionary<char, double>();
+    
+        public void RegisterProduct(char name, double price)
+        {
+            products.Add(name, price);
+        }
+        public double GetPrice(string s)
+        {
+            double sum = 0;
+            foreach(char  c in s)
+            {
+                if(products.ContainsKey(c))
+                {
+                    sum += products[c];
+                }
+            }
+            return sum;
+        }
+
+    }
     public class UnitTest1
     {
         [Fact]
