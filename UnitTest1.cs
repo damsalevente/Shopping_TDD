@@ -40,5 +40,17 @@ namespace Shopping_TDD
             var price = Shop.GetPrice("AC");
             Assert.Equal(40, price);
         }
+        [Fact]
+        public void Set_CountDiscount()
+        {
+            /* create shoppingcart */
+            ShoppingCart Shop = new ShoppingCart();
+            Shop.RegisterProduct('A', 10);
+            Shop.RegisterProduct('B', 20);
+            Shop.RegisterProduct('C', 30);
+            Shop.RegisterCountDiscount('A', 3, 4);
+            var price = Shop.GetPrice("AAAAAAAC");
+            Assert.Equal(90, price);
+        }
     }
 }
