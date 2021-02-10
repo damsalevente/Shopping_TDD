@@ -8,12 +8,10 @@ namespace Shopping_TDD
     {
         public string Pattern { get; set; }
         public int Amount { get; set; }
-        public bool OnlyPartner { get; set; }
-        public ComboDiscount(string p, int amount, bool partner)
+        public ComboDiscount(string p, int amount)
         {
             Pattern = p;
             Amount = amount;
-            OnlyPartner = partner;
         }
     }
 
@@ -57,9 +55,9 @@ namespace Shopping_TDD
         {
             countdiscounts[name] = new CountDiscount(topay, number);
         }
-        internal void RegisterComboDiscount(string v1, int v2, bool clubmember)
+        internal void RegisterComboDiscount(string v1, int v2)
         {
-            comboDiscounts.Add(new ComboDiscount(v1, v2, clubmember));
+            comboDiscounts.Add(new ComboDiscount(v1, v2));
         }
 
         public double GetPrice(string s)
@@ -88,31 +86,28 @@ namespace Shopping_TDD
 
             foreach (ComboDiscount comboDiscount in comboDiscounts)
             {
-                if ((comboDiscount.OnlyPartner && club_member) || !comboDiscount.OnlyPartner)
+                bool canUpdate = true;
+                while (canUpdate)
                 {
-                    bool canUpdate = true;
-                    while (canUpdate)
+                    foreach (char c in comboDiscount.Pattern)
+                    {
+                        if (false == shoppinglist.ContainsKey(c))
+                        {
+                            canUpdate = false;
+                        }
+                    }
+                    if (canUpdate)
                     {
                         foreach (char c in comboDiscount.Pattern)
                         {
-                            if (false == shoppinglist.ContainsKey(c))
+                            shoppinglist[c] -= 1;
+                            if (shoppinglist[c] == 0)
                             {
                                 canUpdate = false;
+                                shoppinglist.Remove(c);
                             }
                         }
-                        if (canUpdate)
-                        {
-                            foreach (char c in comboDiscount.Pattern)
-                            {
-                                shoppinglist[c] -= 1;
-                                if (shoppinglist[c] == 0)
-                                {
-                                    canUpdate = false;
-                                    shoppinglist.Remove(c);
-                                }
-                            }
-                            sum += comboDiscount.Amount;
-                        }
+                        sum += comboDiscount.Amount;
                     }
                 }
             }
@@ -191,7 +186,7 @@ namespace Shopping_TDD
             Assert.Equal(95, price);
         }
         [Fact]
-        public void Set_Combo_Discount_partner()
+        public void Set_Combo_Discount()
         {
             /* this unit test has to be reworked,
              * since the club_membership will give him 10% discount */
@@ -201,23 +196,7 @@ namespace Shopping_TDD
             Shop.RegisterProduct('A', 10);
             Shop.RegisterProduct('B', 20);
             Shop.RegisterProduct('C', 30);
-            Shop.RegisterComboDiscount("ABC", 30, true);
-            var price = Shop.GetPrice("ABCAAAA"); // (30 + 40)
-            Assert.Equal(100, price);
-        }
-
-        [Fact]
-        public void Set_Combo_Discount_Not_Just_Partner()
-        {
-            /* this unit test has to be reworked,
-             * since the club_membership will give him 10% discount */
-
-            /* create shoppingcart */
-            ShoppingCart Shop = new ShoppingCart();
-            Shop.RegisterProduct('A', 10);
-            Shop.RegisterProduct('B', 20);
-            Shop.RegisterProduct('C', 30);
-            Shop.RegisterComboDiscount("ABC", 30, false);
+            Shop.RegisterComboDiscount("ABC", 30);
             var price = Shop.GetPrice("ABCAAAA"); // (30 + 40)
             Assert.Equal(70, price);
         }
