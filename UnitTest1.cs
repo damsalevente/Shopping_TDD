@@ -258,5 +258,20 @@ namespace Shopping_TDD
             var price = Shop.GetPrice("ABCt"); // should recieve combo discount
             Assert.Equal(9, price);
         }
+
+        [Fact]
+        public void User_supershop()
+        {
+            /* create shoppingcart */
+            ShoppingCart Shop = new ShoppingCart();
+            Shop.user.SuperShop = 100000; /* set supershop points manually */
+            Shop.RegisterProduct('A', 10);
+            Shop.RegisterProduct('B', 20);
+            Shop.RegisterProduct('C', 30);
+            Shop.RegisterComboDiscount("ABC", 10);
+            var price = Shop.GetPrice("ABC3tp");
+            Assert.Equal(0, price);
+        }
+
     }
 }
