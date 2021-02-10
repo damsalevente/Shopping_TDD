@@ -4,6 +4,19 @@ using Xunit;
 
 namespace Shopping_TDD
 {
+
+    public class AmountDiscount
+    {
+        public double Ratio { get; set; }
+        public double Limit { get; set; }
+
+        public AmountDiscount(int N, double M)
+        {
+            Limit = N;
+            Ratio = M;
+        }
+    }
+
     public class CountDiscount
     {
         public double Ratio { get; set; }
@@ -16,14 +29,20 @@ namespace Shopping_TDD
     public class ShoppingCart
     {
         private Dictionary<char, CountDiscount> countdiscounts = new Dictionary<char, CountDiscount>();
-
         private Dictionary<char, double> products = new Dictionary<char, double>();
-
         private Dictionary<char, int> shoppinglist = new Dictionary<char, int>();
-
+        private Dictionary<char, AmountDiscount> amountdiscounts = new Dictionary<char, AmountDiscount>();
+        internal void RegisterAmountDiscount(char v1, int v2, double v3)
+        {
+            amountdiscounts.Add(v1, new AmountDiscount(v2, v3));
+        }
         public void RegisterProduct(char name, double price)
         {
             products.Add(name, price);
+        }
+        public void RegisterCountDiscount(char name, int topay, int number)
+        {
+            countdiscounts[name] = new CountDiscount(topay, number);
         }
 
         public double GetPrice(string s)
@@ -53,18 +72,23 @@ namespace Shopping_TDD
 
             foreach (KeyValuePair<char, int> shopitem in shoppinglist)
             {
-                sum += shopitem.Value * products[shopitem.Key];
+                if (amountdiscounts.ContainsKey(shopitem.Key))
+                {
+                    if (shopitem.Value >= amountdiscounts[shopitem.Key].Limit)
+                    {
+                        sum += shopitem.Value * amountdiscounts[shopitem.Key].Ratio * products[shopitem.Key];
+                    }
+                }
+                else
+                {
+                    sum += shopitem.Value * products[shopitem.Key];
+                }
             }
 
             return sum;
         }
 
 
-        
-        public void RegisterCountDiscount(char name, int topay, int number)
-        {
-            countdiscounts[name] = new CountDiscount(topay, number);
-        }
     }
 
 
