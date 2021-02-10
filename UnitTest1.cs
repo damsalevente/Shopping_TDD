@@ -142,8 +142,8 @@ namespace Shopping_TDD
             Shop.RegisterProduct('B', 20);
             Shop.RegisterProduct('C', 30);
             Shop.RegisterComboDiscount("ABC", 30);
-            var price = Shop.GetPrice("ABCAAAA"); // (30 + 40) * .90
-            Assert.Equal(63, price);
+            var price = Shop.GetPrice("ABCAAAA"); // (30 + 40)
+            Assert.Equal(70, price);
         }
     }
 }
