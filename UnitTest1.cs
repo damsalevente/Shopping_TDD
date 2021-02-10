@@ -63,17 +63,25 @@ namespace Shopping_TDD
         public double GetPrice(string s)
         {
             double sum = 0;
-
+            bool club_member = false;
             foreach (char c in s)
             {
-                if (shoppinglist.ContainsKey(c))
+                if (c == 't')
                 {
-                    shoppinglist[c] += 1;
+                    club_member = true;
                 }
                 else
                 {
-                    shoppinglist[c] = 1;
+                    if (shoppinglist.ContainsKey(c))
+                    {
+                        shoppinglist[c] += 1;
+                    }
+                    else
+                    {
+                        shoppinglist[c] = 1;
+                    }
                 }
+             
             }
 
             foreach (ComboDiscount comboDiscount in comboDiscounts)
@@ -126,6 +134,10 @@ namespace Shopping_TDD
                 {
                     sum += shopitem.Value * products[shopitem.Key];
                 }
+            }
+            if (club_member)
+            {
+                sum *= 0.9;
             }
 
             return sum;
