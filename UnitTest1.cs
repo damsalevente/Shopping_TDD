@@ -130,6 +130,20 @@ namespace Shopping_TDD
             var price = Shop.GetPrice("AAAABCA"); // 5 * 0.9 + 20 + 30 
             Assert.Equal(95, price);
         }
+        [Fact]
+        public void Set_Combo_Discount()
+        {
+            /* this unit test has to be reworked,
+             * since the club_membership will give him 10% discount */
 
+            /* create shoppingcart */
+            ShoppingCart Shop = new ShoppingCart();
+            Shop.RegisterProduct('A', 10);
+            Shop.RegisterProduct('B', 20);
+            Shop.RegisterProduct('C', 30);
+            Shop.RegisterComboDiscount("ABC", 30);
+            var price = Shop.GetPrice("ABCAAAA"); // (30 + 40) * .90
+            Assert.Equal(63, price);
+        }
     }
 }
