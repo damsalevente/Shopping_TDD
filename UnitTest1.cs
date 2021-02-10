@@ -212,5 +212,30 @@ namespace Shopping_TDD
             var price = Shop.GetPrice("At"); //9
             Assert.Equal(9, price);
         }
+        [Fact]
+        public void No_Partner_No_Combo_Discount()
+        {
+            /* create shoppingcart */
+            ShoppingCart Shop = new ShoppingCart();
+            Shop.RegisterProduct('A', 10);
+            Shop.RegisterProduct('B', 20);
+            Shop.RegisterProduct('C', 30);
+            Shop.RegisterComboDiscount("ABC", 50);
+            var price = Shop.GetPrice("ABC"); // should not recieve combo discount
+            Assert.Equal(60, price);
+        }
+
+        [Fact]
+        public void Partner_Combo_Discount()
+        {
+            /* create shoppingcart */
+            ShoppingCart Shop = new ShoppingCart();
+            Shop.RegisterProduct('A', 10);
+            Shop.RegisterProduct('B', 20);
+            Shop.RegisterProduct('C', 30);
+            Shop.RegisterComboDiscount("ABC", 10);
+            var price = Shop.GetPrice("ABCAt"); // should recieve combo discount
+            Assert.Equal(9, price);
+        }
     }
 }
