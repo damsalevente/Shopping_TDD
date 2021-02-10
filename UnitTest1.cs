@@ -14,6 +14,7 @@ namespace Shopping_TDD
             SuperShop = 0;
         }
     }
+
     public class ComboDiscount
     {
         public string Pattern { get; set; }
@@ -50,34 +51,39 @@ namespace Shopping_TDD
 
     public class ShoppingCart
     {
+        double sum = 0;
         public User user = new User();
+
         private List<ComboDiscount> comboDiscounts = new List<ComboDiscount>();
+
         private Dictionary<char, CountDiscount> countdiscounts = new Dictionary<char, CountDiscount>();
         private Dictionary<char, double> products = new Dictionary<char, double>();
         private Dictionary<char, int> shoppinglist = new Dictionary<char, int>();
         private Dictionary<char, AmountDiscount> amountdiscounts = new Dictionary<char, AmountDiscount>();
+
         internal void RegisterAmountDiscount(char v1, int v2, double v3)
         {
             amountdiscounts.Add(v1, new AmountDiscount(v2, v3));
-        }
-        public void RegisterProduct(char name, double price)
-        {
-            products.Add(name, price);
-        }
-        public void RegisterCountDiscount(char name, int topay, int number)
-        {
-            countdiscounts[name] = new CountDiscount(topay, number);
         }
         internal void RegisterComboDiscount(string v1, int v2, bool clubmember)
         {
             comboDiscounts.Add(new ComboDiscount(v1, v2, clubmember));
         }
+        internal void RegisterProduct(char name, double price)
+        {
+            products.Add(name, price);
+        }
+        internal void RegisterCountDiscount(char name, int topay, int number)
+        {
+            countdiscounts[name] = new CountDiscount(topay, number);
+        }
+        
 
         public double GetPrice(string s)
         {
-            double sum = 0;
             bool use_supershop = false;
             bool club_member = false;
+
             foreach (char c in s)
             {
                 if (c == 't')
@@ -103,8 +109,29 @@ namespace Shopping_TDD
                         shoppinglist[c] = 1;
                     }
                 }
-             
             }
+
+            calculateComboDiscount(club_member);
+
+            applyDiscount();
+
+            applyClubMembership(club_member);
+            
+            saveSupershopDiscount(use_supershop);
+
+            return sum;
+        }
+
+        private void applyClubMembership(bool club_member)
+        {
+            if (club_member)
+            {
+                sum *= 0.9;
+            }
+        }
+
+        private void calculateComboDiscount(bool club_member)
+        {
 
             foreach (ComboDiscount comboDiscount in comboDiscounts)
             {
@@ -136,8 +163,10 @@ namespace Shopping_TDD
                     }
                 }
             }
+        }
 
-            /* apply countdiscount */
+        private void applyDiscount()
+        {
             foreach (KeyValuePair<char, CountDiscount> am_discount in countdiscounts)
             {
                 if (shoppinglist.ContainsKey(am_discount.Key))
@@ -160,10 +189,10 @@ namespace Shopping_TDD
                     sum += shopitem.Value * products[shopitem.Key];
                 }
             }
-            if (club_member)
-            {
-                sum *= 0.9;
-            }
+        }
+
+        private void saveSupershopDiscount(bool use_supershop)
+        {
             if (use_supershop && user.UserId != 0)
             {
                 double diff = sum - user.SuperShop;
@@ -178,17 +207,11 @@ namespace Shopping_TDD
                     user.SuperShop = 0;
                 }
             }
-           user.SuperShop += (int)(sum * 0.01);
-
-            return sum;
+            user.SuperShop += (int)(sum * 0.01);
         }
-
-
     }
 
-
-
-    public class UnitTest1
+    public class UnitTests
     {
         [Fact]
         public void Call_RegisterProduct()
@@ -201,6 +224,7 @@ namespace Shopping_TDD
             var price = Shop.GetPrice("AC");
             Assert.Equal(40, price);
         }
+
         [Fact]
         public void Set_CountDiscount()
         {
@@ -213,6 +237,7 @@ namespace Shopping_TDD
             var price = Shop.GetPrice("AAAAAAAC");
             Assert.Equal(90, price);
         }
+
         [Fact]
         public void Set_Amount_Discount()
         {
@@ -268,6 +293,7 @@ namespace Shopping_TDD
             var price = Shop.GetPrice("At"); //9
             Assert.Equal(9, price);
         }
+
         [Fact]
         public void No_Partner_No_Combo_Discount()
         {
@@ -308,6 +334,5 @@ namespace Shopping_TDD
             Assert.Equal(0, price);
             Assert.Equal(99991, Shop.user.SuperShop);
         }
-
     }
 }
