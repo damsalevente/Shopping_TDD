@@ -4,6 +4,16 @@ using Xunit;
 
 namespace Shopping_TDD
 {
+    public class User
+    {
+        public int UserId { get; set; }
+        public int SuperShop { get; set; }
+        public User()
+        {
+            UserId = 0;
+            SuperShop = 0;
+        }
+    }
     public class ComboDiscount
     {
         public string Pattern { get; set; }
@@ -40,6 +50,7 @@ namespace Shopping_TDD
 
     public class ShoppingCart
     {
+        public User user = new User();
         private List<ComboDiscount> comboDiscounts = new List<ComboDiscount>();
         private Dictionary<char, CountDiscount> countdiscounts = new Dictionary<char, CountDiscount>();
         private Dictionary<char, double> products = new Dictionary<char, double>();
@@ -65,12 +76,21 @@ namespace Shopping_TDD
         public double GetPrice(string s)
         {
             double sum = 0;
+            bool use_supershop = false;
             bool club_member = false;
             foreach (char c in s)
             {
                 if (c == 't')
                 {
                     club_member = true;
+                }
+                else if (c == 'p')
+                {
+                    use_supershop = true;
+                }
+                else if (Char.IsNumber(c))
+                {
+                    user.UserId = (int)c;
                 }
                 else
                 {
@@ -144,6 +164,21 @@ namespace Shopping_TDD
             {
                 sum *= 0.9;
             }
+            if (use_supershop && user.UserId != 0)
+            {
+                double diff = sum - user.SuperShop;
+                if (diff < 0)
+                {
+                    user.SuperShop = (int)(user.SuperShop - sum);
+                    sum = 0;
+                }
+                else
+                {
+                    sum = diff;
+                    user.SuperShop = 0;
+                }
+            }
+           user.SuperShop += (int)(sum * 0.01);
 
             return sum;
         }
@@ -268,9 +303,10 @@ namespace Shopping_TDD
             Shop.RegisterProduct('A', 10);
             Shop.RegisterProduct('B', 20);
             Shop.RegisterProduct('C', 30);
-            Shop.RegisterComboDiscount("ABC", 10);
+            Shop.RegisterComboDiscount("ABC", 10, true);
             var price = Shop.GetPrice("ABC3tp");
             Assert.Equal(0, price);
+            Assert.Equal(99991, Shop.user.SuperShop);
         }
 
     }
