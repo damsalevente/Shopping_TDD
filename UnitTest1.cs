@@ -202,7 +202,7 @@ namespace Shopping_TDD
             Shop.RegisterProduct('B', 20);
             Shop.RegisterProduct('C', 30);
             Shop.RegisterComboDiscount("ABC", 30, true);
-            var price = Shop.GetPrice("ABCAAAA"); // (30 + 40)
+            var price = Shop.GetPrice("ABCAAAA"); // 100
             Assert.Equal(100, price);
         }
 
@@ -241,7 +241,7 @@ namespace Shopping_TDD
             Shop.RegisterProduct('A', 10);
             Shop.RegisterProduct('B', 20);
             Shop.RegisterProduct('C', 30);
-            Shop.RegisterComboDiscount("ABC", 50);
+            Shop.RegisterComboDiscount("ABC", 50, true);
             var price = Shop.GetPrice("ABC"); // should not recieve combo discount
             Assert.Equal(60, price);
         }
@@ -254,8 +254,8 @@ namespace Shopping_TDD
             Shop.RegisterProduct('A', 10);
             Shop.RegisterProduct('B', 20);
             Shop.RegisterProduct('C', 30);
-            Shop.RegisterComboDiscount("ABC", 10);
-            var price = Shop.GetPrice("ABCAt"); // should recieve combo discount
+            Shop.RegisterComboDiscount("ABC", 10, true);
+            var price = Shop.GetPrice("ABCt"); // should recieve combo discount
             Assert.Equal(9, price);
         }
     }
