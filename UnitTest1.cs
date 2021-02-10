@@ -4,6 +4,16 @@ using Xunit;
 
 namespace Shopping_TDD
 {
+    public class ComboDiscount
+    {
+        public string Pattern { get; set; }
+        public int Amount { get; set; }
+        public ComboDiscount(string p, int amount)
+        {
+            Pattern = p;
+            Amount = amount;
+        }
+    }
 
     public class AmountDiscount
     {
@@ -28,6 +38,7 @@ namespace Shopping_TDD
 
     public class ShoppingCart
     {
+        private List<ComboDiscount> comboDiscounts = new List<ComboDiscount>();
         private Dictionary<char, CountDiscount> countdiscounts = new Dictionary<char, CountDiscount>();
         private Dictionary<char, double> products = new Dictionary<char, double>();
         private Dictionary<char, int> shoppinglist = new Dictionary<char, int>();
@@ -44,6 +55,10 @@ namespace Shopping_TDD
         {
             countdiscounts[name] = new CountDiscount(topay, number);
         }
+        internal void RegisterComboDiscount(string v1, int v2)
+        {
+            comboDiscounts.Add(new ComboDiscount(v1, v2));
+        }
 
         public double GetPrice(string s)
         {
@@ -58,6 +73,34 @@ namespace Shopping_TDD
                 else
                 {
                     shoppinglist[c] = 1;
+                }
+            }
+
+            foreach (ComboDiscount comboDiscount in comboDiscounts)
+            {
+                bool canUpdate = true;
+                while (canUpdate)
+                {
+                    foreach (char c in comboDiscount.Pattern)
+                    {
+                        if (false == shoppinglist.ContainsKey(c))
+                        {
+                            canUpdate = false;
+                        }
+                    }
+                    if (canUpdate)
+                    {
+                        foreach (char c in comboDiscount.Pattern)
+                        {
+                            shoppinglist[c] -= 1;
+                            if (shoppinglist[c] == 0)
+                            {
+                                canUpdate = false;
+                                shoppinglist.Remove(c);
+                            }
+                        }
+                        sum += comboDiscount.Amount;
+                    }
                 }
             }
 
